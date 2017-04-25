@@ -4,9 +4,6 @@
 import serial
 import time
 import sys
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
-
 from struct import *
 from libraryCH.device.lcd import ILI9341
 debug=0
@@ -21,14 +18,6 @@ lcd_LineNow = 0
 lcd_lineHeight = 30  #行的高度
 lcd_totalLine = 8  # LCD的行數 (320/30=8)
 screenSaverNow = False
-
-pinRED = 4
-pinYELLOW = 22
-pinGREEN = 27
-
-GPIO.setup(pinRED ,GPIO.OUT)
-GPIO.setup(pinYELLOW ,GPIO.OUT)
-GPIO.setup(pinGREEN ,GPIO.OUT)
 
 numKeep = 6
 a_time = ["", "", "", "", "", ""]
@@ -143,17 +132,10 @@ class g3sensor():
             return self.data
 
 air=g3sensor()
-i = 0
 
 while True:
     pmdata = (air.read("/dev/ttyS0"))
     print (pmdata[3], pmdata[4], pmdata[5])
     display_data(pmdata[3], pmdata[4], pmdata[5])
-    time.sleep(1)
+    time.sleep(20)
 
-    if(i % 2 == 0):
-        GPIO.output(pinGREEN, GPIO.HIGH)
-    else:
-        GPIO.output(pinGREEN, GPIO.LOW)
-
-    i += 1
