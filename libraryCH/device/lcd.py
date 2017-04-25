@@ -36,9 +36,15 @@ class ILI9341:
     def displayClear(self):
         self.disp.clear((0, 0, 0))
 
-    def displayText(self, fontPath, fontSize=18, text="Hello world.", position=(10, 10), fontColor=(255, 255, 255)):
+    def displayText(self, fontPath, fontSize=18, text="Hello world.", position=(10, 10), fontColor=(255, 255, 255), imagePath=""):
         # Get rendered font width and height.
-        image = self.disp.buffer
+        if(imagePath!=""):
+            image = Image.open(imagePath)
+            image = image.rotate(self.LCD_Rotate).resize((self.LCD_size_w, self.LCD_size_h))
+            #self.disp.display(image)
+        else:
+            image = self.disp.buffer
+
         font = ImageFont.truetype(fontPath, fontSize)
         draw = ImageDraw.Draw(image)
         width, height = draw.textsize(text, font=font)

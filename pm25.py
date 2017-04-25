@@ -10,7 +10,9 @@ debug=0
 
 #LCD顯示設定
 lcd = ILI9341(LCD_size_w=240, LCD_size_h=320, LCD_Rotate=90)
-lcd.displayImg("green.png")
+lcd.displayImg("rpiRF.jpg")
+time.sleep(1)
+
 #LCD設定
 lcd_LineNow = 0
 lcd_lineHeight = 30  #行的高度
@@ -27,13 +29,16 @@ def display_data(pm1, pm25, pm10):
     global a_time, a_pm1, a_pm25, a_pm10
 
     dt = list(time.localtime())
+    nowHour = dt[3]
     nowMinute = dt[4]
     nowSeconds = dt[5]
 
-    lcd.displayText("e1.ttf", fontSize=12, text="TIME    [PM]1  [PM]2.5  [pm]10", position=(lcd_Line2Pixel(1), 180), fontColor=(253,244,6) )
+    lcd.displayClear()
+    title = ("%15s %9s %9s %9s" % ("H:M:S", "pm01", "pm2.5", "pm10"))
+    lcd.displayText("e1.ttf", fontSize=16, text=title, position=(lcd_Line2Pixel(1), 40), fontColor=(255,255,255) )
     for i in range(0,numKeep):
         if(i==(numKeep-1)):
-            a_time[0] = str(nowMinute) + ":" + str(nowSeconds)
+            a_time[0] = str(nowHour) + ":" + str(nowMinute) + ":" + str(nowSeconds)
             a_pm1[0] = pm1
             a_pm25[0] = pm25
             a_pm10[0] = pm10
@@ -44,8 +49,9 @@ def display_data(pm1, pm25, pm10):
             a_pm25[numKeep-1-i] = a_pm25[numKeep-2-i]
             a_pm10[numKeep-1-i] = a_pm10[numKeep-2-i]
 
-        displayTXT = a_time[numKeep-1-i] + "  " + str(a_pm1[numKeep-1-i]) + "  " + str(a_pm25[numKeep-1-i]) + "  " + str(a_pm10[numKeep-1-i])
-        lcd.displayText("e1.ttf", fontSize=12, text=displayTXT, position=(lcd_Line2Pixel(numKeep-i+1), 180), fontColor=(253,244,6) )
+        if(a_time[numKeep-1-i]>0 and a_pm1[numKeep-1-i]>0 and a_pm10[numKeep-1-i]>0):
+            displayTXT = ("%13s %11d %11d %11d" % (a_time[numKeep-1-i],a_pm1[numKeep-1-i], a_pm25[numKeep-1-i], a_pm10[numKeep-1-i]))
+            lcd.displayText("e1.ttf", fontSize=16, text=displayTXT, position=(lcd_Line2Pixel(numKeep-i+1), 60), fontColor=(253,244,6) )
 
 #將行數轉為pixels
 def lcd_Line2Pixel(lineNum):
@@ -130,19 +136,6 @@ air=g3sensor()
 while True:
     pmdata = (air.read("/dev/ttyS0"))
     print (pmdata[3], pmdata[4], pmdata[5])
-    display_data(pmdata[3], pmdata[4], [5])
-    time.sleep(30)
-
-
-#if __name__ == '__main__': 
-#    air=g3sensor()
-#    while True:
-#        pmdata=0
-#        try:
-#            pmdata=air.read("/dev/ttyAMA0")
-#        except: 
-#            next
-#        if pmdata != 0:
-#            print pmdata
-#            break
+    display_data(pmdata[3], pmdata[4], pmdata[5])
+    time.sleep(15)
 
