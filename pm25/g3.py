@@ -86,7 +86,7 @@ class g3sensor():
 air=g3sensor()
 
 while True:
-    print (air.read("/dev/ttyAMA0"))
+    print (air.read("/dev/ttyS0"))
     time.sleep(10)
 
 
