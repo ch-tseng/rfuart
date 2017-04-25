@@ -29,6 +29,9 @@ pinGREEN = 27
 GPIO.setup(pinRED ,GPIO.OUT)
 GPIO.setup(pinYELLOW ,GPIO.OUT)
 GPIO.setup(pinGREEN ,GPIO.OUT)
+GPIO.output(pinGREEN, GPIO.LOW)
+GPIO.output(pinYELLOW, GPIO.LOW)
+GPIO.output(pinRED, GPIO.LOW)
 
 numKeep = 6
 a_time = ["", "", "", "", "", ""]
@@ -143,7 +146,6 @@ class g3sensor():
             return self.data
 
 air=g3sensor()
-i = 0
 
 while True:
     pmdata = (air.read("/dev/ttyS0"))
@@ -151,9 +153,16 @@ while True:
     display_data(pmdata[3], pmdata[4], pmdata[5])
     time.sleep(1)
 
-    if(i % 2 == 0):
+    if(pmdata[4]<20):
         GPIO.output(pinGREEN, GPIO.HIGH)
-    else:
+        GPIO.output(pinRED, GPIO.LOW)
+        GPIO.output(pinYELLOW, GPIO.LOW)
+    elif (pmdata[4]<50 and pmdata[4]>19):
         GPIO.output(pinGREEN, GPIO.LOW)
+        GPIO.output(pinRED, GPIO.LOW)
+        GPIO.output(pinYELLOW, GPIO.HIGH)
+    elif (pmdata[4]>49):
+        GPIO.output(pinGREEN, GPIO.LOW)
+        GPIO.output(pinRED, GPIO.HIGH)
+        GPIO.output(pinYELLOW, GPIO.LOW)
 
-    i += 1
