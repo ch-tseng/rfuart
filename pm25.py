@@ -3,6 +3,7 @@
 
 import serial
 import time
+from datetime import datetime
 import os
 import sys
 import RPi.GPIO as GPIO
@@ -50,15 +51,17 @@ def restart_program():
 
 def display_data(pm1, pm25, pm10):
     global a_time, a_pm1, a_pm25, a_pm10
-    dt = list(time.localtime())
+    #dt = list(time.localtime())
 
     lcd.displayClear()
     title = ("%15s %9s %9s %9s" % ("H:M:S", "pm01", "pm2.5", "pm10"))
-    lcd.displayText("e1.ttf", fontSize=18, text=title, position=(lcd_Line2Pixel(1), 40), fontColor=(255,255,255) )
+    lcd.displayText("e1.ttf", fontSize=18, text=title, position=(lcd_Line2Pixel(1), 30), fontColor=(255,255,255) )
 
     for i in range(0,numKeep):
         if(i==(numKeep-1)):
-            a_time[0] = str(dt[3]) + ":" + str(dt[4]) + ":" + str(dt[5])
+            #a_time[0] = str(dt[3]) + ":" + str(dt[4]) + ":" + str(dt[5])
+            now = datetime.now()
+            a_time[0] = str(now.strftime("%H:%M:%S"))
             a_pm1[0] = pm1
             a_pm25[0] = pm25
             a_pm10[0] = pm10
