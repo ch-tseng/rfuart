@@ -58,3 +58,9 @@ class ILI9341:
         # Paste the text into the image, using it as a mask for transparency.
         image.paste(rotated, position, rotated)
         self.disp.display()
+        #del font, image, textimage, textdraw, rotated
+        font = None
+        image = None
+        textimage = None
+        textdraw = None
+        rotated = None
