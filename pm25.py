@@ -3,6 +3,7 @@
 
 import serial
 import time
+import os
 import sys
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
@@ -40,6 +41,13 @@ a_pm1 = [0, 0, 0, 0, 0, 0]
 a_pm25 = [0, 0, 0, 0, 0, 0]
 a_pm10 = [0, 0, 0, 0, 0, 0]
 
+def restart_program():
+    """Restarts the current program.
+    Note: this function does not return. Any cleanup action (like
+    saving data) must be done before calling this function."""
+    python = sys.executable
+    os.execl(python, python, * sys.argv)
+
 def display_data(pm1, pm25, pm10):
     global a_time, a_pm1, a_pm25, a_pm10
     dt = list(time.localtime())
@@ -71,11 +79,11 @@ def lcd_Line2Pixel(lineNum):
 
 
 #air=G3()
-
+i = 0
 while True:
     air=G3()
     pmdata = (air.read("/dev/ttyS0"))
-    print (pmdata[3], pmdata[4], pmdata[5])
+    print ("{}. pm1:{} pm2.5:{} pm10:{}".format(i, pmdata[3], pmdata[4], pmdata[5]))
     display_data(pmdata[3], pmdata[4], pmdata[5])
 
     if(pmdata[4]<20):
@@ -93,5 +101,9 @@ while True:
 
     pmdata = None
     air = None
+
     time.sleep(6)
-    
+  
+    i += 1
+    if(i>60):
+        restart_program()
