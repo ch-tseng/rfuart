@@ -54,7 +54,10 @@ def display_data(pm1, pm25, pm10):
     #dt = list(time.localtime())
 
     lcd.displayClear()
-    title = ("%15s %9s %9s %9s" % ("H:M:S", "pm01", "pm2.5", "pm10"))
+    
+    #title = ("%19s %9s %9s %9s" % ("H:M:S", "pm01", "pm2.5", "pm10"))
+    title = "H:M:S     pm01   pm2.5   pm10"
+ 
     lcd.displayText("e1.ttf", fontSize=18, text=title, position=(lcd_Line2Pixel(1), 30), fontColor=(255,255,255) )
 
     for i in range(0,numKeep):
@@ -73,8 +76,20 @@ def display_data(pm1, pm25, pm10):
             a_pm10[numKeep-1-i] = a_pm10[numKeep-2-i]
 
         if(a_time[numKeep-1-i]>0 and a_pm1[numKeep-1-i]>0 and a_pm10[numKeep-1-i]>0):
-            displayTXT = ("%13s %11d %11d %11d" % (a_time[numKeep-1-i],a_pm1[numKeep-1-i], a_pm25[numKeep-1-i], a_pm10[numKeep-1-i]))
-            lcd.displayText("e1.ttf", fontSize=18, text=displayTXT, position=(lcd_Line2Pixel(numKeep-i+1), 60), fontColor=(253,244,6) )
+            stringIndex = ('{:>17}'.format(a_time[numKeep-1-i]))
+           # stringPM01 = ('{:>13}'.format(a_pm1[numKeep-1-i]))
+           # stringPM25 = ('{:>13}'.format(a_pm25[numKeep-1-i]))
+             #stringPM10 = ('{:>13}'.format(a_pm10[numKeep-1-i]))
+             #stringIndex = str(a_time[numKeep-1-i]).ljust(20)
+             #stringPM01 = str(a_pm1[numKeep-1-i]).rjust(13)
+             #stringPM25 = str(a_pm25[numKeep-1-i]).rjust(13)
+             #stringPM10 = str(a_pm10[numKeep-1-i]).rjust(13)
+            stringPM01 = ('{:>13}'.format(a_pm1[numKeep-1-i]))
+            stringPM25 = ('{:>13}'.format(a_pm25[numKeep-1-i]))
+            stringPM10 = ('{:>13}'.format(a_pm10[numKeep-1-i]))
+
+            displayTXT = ("{}{}{}{}".format(stringIndex, stringPM01, stringPM25, stringPM10))
+            lcd.displayText("e1.ttf", fontSize=18, text=displayTXT, position=(lcd_Line2Pixel(numKeep-i+1), 30), fontColor=(253,244,6) )
 
 #將行數轉為pixels
 def lcd_Line2Pixel(lineNum):
@@ -87,7 +102,8 @@ while True:
     air=G3()
     pmdata = (air.read("/dev/ttyS0"))
     print ("{}. pm1:{} pm2.5:{} pm10:{}".format(i, pmdata[3], pmdata[4], pmdata[5]))
-    display_data(pmdata[3], pmdata[4], pmdata[5])
+    if(pmdata[3]<1000 and pmdata[4]<1000 and pmdata[5]<1000):
+        display_data(pmdata[3], pmdata[4], pmdata[5])
 
     if(pmdata[4]<20):
         GPIO.output(pinGREEN, GPIO.HIGH)
@@ -108,5 +124,6 @@ while True:
     time.sleep(6)
   
     i += 1
-    if(i>60):
+    if(i%90 == 0):
+        i=1
         restart_program()
